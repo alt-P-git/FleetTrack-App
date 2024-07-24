@@ -13,6 +13,7 @@ interface AppContainer {
 class DefaultAppContainer : AppContainer {
     private val BASE_URL = "https://fleet-track.vercel.app/"
 
+    //ignoreUnknownKeys
     private val retrofit = Retrofit.Builder()
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(BASE_URL)

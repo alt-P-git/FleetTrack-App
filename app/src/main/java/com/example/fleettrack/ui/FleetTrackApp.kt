@@ -13,6 +13,8 @@ import com.example.fleettrack.ui.screens.WebViewScreen
 @Composable
 fun FleetTrackApp(
     modifier: Modifier = Modifier,
+    onLocationStart: () -> Unit = {},
+    onLocationStop: () -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {
     val viewModel: FleetTrackViewModel = viewModel(
@@ -26,7 +28,10 @@ fun FleetTrackApp(
         LoadingScreen()
     } else if(isLoggedIn == true) {
         if(uiState.isShowingTripsScreen)
-            TripsScreen()
+            TripsScreen(
+                onLocationStart = onLocationStart,
+                onLocationStop = onLocationStop,
+            )
         else
             WebViewScreen(
                 onBackPressed = { viewModel.navigateToTripsScreen() },

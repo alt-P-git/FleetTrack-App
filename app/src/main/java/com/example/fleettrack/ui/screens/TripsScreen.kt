@@ -48,6 +48,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TripsScreen(
+    onLocationStart: () -> Unit = {},
+    onLocationStop: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val viewModel: FleetTrackViewModel = viewModel(
@@ -68,6 +70,7 @@ fun TripsScreen(
     )
     val openDialog = remember { mutableStateOf(false) }
 
+    var locationStatus = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.getTrips()
@@ -85,6 +88,30 @@ fun TripsScreen(
                             modifier = Modifier.rotate(rotation)
                         )
                     }
+                    if(locationStatus.value)
+                    {
+                        IconButton(onClick = {
+                            locationStatus.value = false;
+                            onLocationStop()
+                        }) {
+                            Icon(
+                                painterResource(id = R.drawable.location_on),
+                                contentDescription = "Location On"
+                            )
+                        }
+                    };
+                    if(!locationStatus.value)
+                    {
+                        IconButton(onClick = {
+                            locationStatus.value = true;
+                            onLocationStart()
+                        }) {
+                            Icon(
+                                painterResource(id = R.drawable.location_off),
+                                contentDescription = "Location Off"
+                            )
+                        }
+                    };
                     IconButton(onClick = { openDialog.value = true}) {
                         Icon(painterResource(id = R.drawable.logout), contentDescription = "Logout")
                     }
@@ -170,14 +197,30 @@ fun TripItem(
     navigateToWebView: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val startDateTimeParts = trip.startDateTime.split("T")
-    val endDateTimeParts = trip.tripEndDataTime.split("T")
+    val startDateTimeParts = trip.startDateTime
+    val endDateTimeParts = trip.tripEndDataTime
 
-    val startDate = startDateTimeParts[0]
-    val startTime = startDateTimeParts[1].split(".")[0]
-
-    val endDate = endDateTimeParts[0]
-    val endTime = endDateTimeParts[1].split(".")[0]
+    //convert date time which is in mills to date and time
+    val startDate = startDateTimeParts.let { it ->
+        val date = java.util.Date(it)
+        val sdf = java.text.SimpleDateFormat("dd-MM-yyyy")
+        sdf.format(date)
+    }
+    val startTime = startDateTimeParts.let { it ->
+        val date = java.util.Date(it)
+        val sdf = java.text.SimpleDateFormat("HH:mm")
+        sdf.format(date)
+    }
+    val endDate = endDateTimeParts.let { it ->
+        val date = java.util.Date(it)
+        val sdf = java.text.SimpleDateFormat("dd-MM-yyyy")
+        sdf.format(date)
+    }
+    val endTime = endDateTimeParts.let { it ->
+        val date = java.util.Date(it)
+        val sdf = java.text.SimpleDateFormat("HH:mm")
+        sdf.format(date)
+    }
 
     Card(
         modifier = modifier
@@ -192,13 +235,18 @@ fun TripItem(
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
+                Text(
+                    text = trip.tripID,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Text(
+                    text = "Status: ${trip.tripStatus}",
+                    modifier = Modifier.padding(8.dp),
+                    fontSize = 12.sp
+                )
             }
-            Text(
-                text = trip.tripID,
-                modifier = Modifier.padding(8.dp),
-            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),

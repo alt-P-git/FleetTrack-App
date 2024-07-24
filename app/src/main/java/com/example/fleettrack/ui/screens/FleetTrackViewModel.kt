@@ -34,6 +34,7 @@ class FleetTrackViewModel(
         )
     )
     val uiState: StateFlow<FleetTrackUiState> = _uiState
+    lateinit var credentials: UserCredentials
 
     init {
         viewModelScope.launch {
@@ -42,6 +43,7 @@ class FleetTrackViewModel(
             _uiState.update { currentState ->
                 currentState.copy(isLoggedIn = isLoggedIn)
             }
+            credentials = preferencesRepository.userCredentials.first()
         }
     }
 
@@ -121,7 +123,6 @@ class FleetTrackViewModel(
         }*/
         viewModelScope.launch {
             try {
-                val credentials = preferencesRepository.userCredentials.first()
                 val trips = fleetTrackRepository.getTrips(credentials.userid, credentials.password)
 //                Log.e("FleetTrackViewModel", "Trips: $trips")
                 _uiState.update { currentState ->

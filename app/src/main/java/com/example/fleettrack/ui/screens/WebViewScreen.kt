@@ -1,6 +1,7 @@
 package com.example.fleettrack.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
 import android.webkit.WebChromeClient
@@ -29,9 +30,10 @@ fun WebViewScreen(
     )
     val uiState by viewModel.uiState.collectAsState()
 
-    val mUrl = "https://www.google.com/search?q=${uiState.currentTrip?.routeName}"
+//    val mUrl = "https://www.google.com/search?q=${uiState.currentTrip?.routeName}"
+    val mUrl = "https://fleet-track-0.vercel.app/ViewDriverRoutes?routeId=${uiState.currentTrip?.routeId}"
+//    val mUrl = "https://fleet-track-0.vercel.app/ViewDriverRoutes?routeId=6616bd0c7b66fb7898d84943"
     val webView = remember { mutableStateOf<WebView?>(null) }
-//    val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     BackHandler {
         onBackPressed()
@@ -60,6 +62,10 @@ fun WebViewScreen(
                 webViewClient = CustomWebViewClient()
                 loadUrl(mUrl)
                 webView.value = this
+
+                postDelayed({
+                    loadUrl(mUrl)
+                }, 2000)
             }
         }, update = {
             it.loadUrl(mUrl)

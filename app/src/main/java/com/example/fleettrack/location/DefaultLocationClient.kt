@@ -39,7 +39,7 @@ class DefaultLocationClient(
 
             val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, interval)
                 .setWaitForAccurateLocation(false)
-                .setMinUpdateIntervalMillis(500)
+                .setMinUpdateIntervalMillis(25000)
                 .setMaxUpdateDelayMillis(interval)
                 .build()
 

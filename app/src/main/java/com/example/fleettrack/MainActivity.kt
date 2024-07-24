@@ -1,12 +1,18 @@
 package com.example.fleettrack
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.core.app.ActivityCompat
+import com.example.fleettrack.location.LocationService
 import com.example.fleettrack.ui.FleetTrackApp
+import com.example.fleettrack.ui.screens.WebViewScreen
 import com.example.fleettrack.ui.theme.FleetTrackTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,14 +30,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FleetTrackTheme {
-
                 FleetTrackApp(
-                    onBackPressed = { finish() }
+                    onBackPressed = { finish() },
+                    onLocationStart = {
+                        Intent(applicationContext, LocationService::class.java).apply {
+                            action = LocationService.ACTION_START
+                            startService(this)
+                        }
+                    },
+                    onLocationStop = {
+                        Intent(applicationContext, LocationService::class.java).apply {
+                            action = LocationService.ACTION_STOP
+                            startService(this)
+                        }
+                    }
                 )
-                /*Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
+                /*Column {
                     Button(onClick = {
                         Intent(applicationContext, LocationService::class.java).apply {
                             action = LocationService.ACTION_START
@@ -40,9 +54,6 @@ class MainActivity : ComponentActivity() {
                     }) {
                         Text(text = "Start Tracking")
                     }
-
-                    Spacer(modifier = Modifier.weight(1f))
-
                     Button(onClick = {
                         Intent(applicationContext, LocationService::class.java).apply {
                             action = LocationService.ACTION_STOP
