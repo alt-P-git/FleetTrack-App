@@ -36,13 +36,10 @@ class LocationService: Service() {
     lateinit var container: AppContainer
 
 
-    //initialize NetworkFleetTrackRepository
     private lateinit var apiService: FleetTrackRepository
-    private val PREFERENCES_REPOSITORY_NAME = "preferences_repository"
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-        name = PREFERENCES_REPOSITORY_NAME
-    )
-    lateinit var preferencesRepository: PreferencesRepository
+
+    private var userId: String? = null
+    private var password: String? = null
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -57,10 +54,17 @@ class LocationService: Service() {
 
         container = DefaultAppContainer()
         apiService = container.fleetTrackRepository
-        preferencesRepository = PreferencesRepository(dataStore)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val param1 = intent?.getStringExtra("userId")
+        val param2 = intent?.getStringExtra("password")
+
+        if (param1 != null && param2 != null) {
+            userId = param1
+            password = param2
+        }
+
         when(intent?.action) {
             ACTION_START -> start()
             ACTION_STOP -> stop()
@@ -77,7 +81,7 @@ class LocationService: Service() {
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        locationClient.getLocationUpdates(30000L)
+        locationClient.getLocationUpdates(10000L)
             .catch { e -> e.printStackTrace() }
             .onEach { location ->
                 val updatedNotification = notification.setContentText("Location: ${location.latitude}, ${location.longitude}")
@@ -104,13 +108,12 @@ class LocationService: Service() {
         longitude: Double
     ) {
         serviceScope.launch {
-            val credentials : UserCredentials = preferencesRepository.userCredentials.first()
+            val credentials = UserCredentials(userId!!, password!!)
             val userId = credentials.userid
             val password = credentials.password
 
             try {
                 val result = apiService.sendLocation(locationData(userId, password, arrayOf(latitude, longitude)))
-                Log.d("LocationService", "Location sent")
             } catch (e: Exception) {
                 e.printStackTrace()
             }

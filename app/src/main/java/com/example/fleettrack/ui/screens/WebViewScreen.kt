@@ -30,9 +30,7 @@ fun WebViewScreen(
     )
     val uiState by viewModel.uiState.collectAsState()
 
-//    val mUrl = "https://www.google.com/search?q=${uiState.currentTrip?.routeName}"
     val mUrl = "https://fleet-track-0.vercel.app/ViewDriverRoutes?routeId=${uiState.currentTrip?.routeId}"
-//    val mUrl = "https://fleet-track-0.vercel.app/ViewDriverRoutes?routeId=6616bd0c7b66fb7898d84943"
     val webView = remember { mutableStateOf<WebView?>(null) }
 
     BackHandler {

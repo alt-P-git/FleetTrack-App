@@ -44,7 +44,7 @@ class PreferencesRepository(
             }
         }
         .map { preferences ->
-            preferences[IS_LOGGED_IN] ?: true
+            preferences[IS_LOGGED_IN] ?: false
         }
 
     val userCredentials: Flow<UserCredentials> = dataStore.data

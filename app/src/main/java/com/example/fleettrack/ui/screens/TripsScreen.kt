@@ -104,12 +104,12 @@ fun TripsScreen(
                     {
                         IconButton(onClick = {
                             locationStatus.value = true;
-                            onLocationStart()
+                            onLocationStart();
                         }) {
                             Icon(
                                 painterResource(id = R.drawable.location_off),
                                 contentDescription = "Location Off"
-                            )
+                            );
                         }
                     };
                     IconButton(onClick = { openDialog.value = true}) {
@@ -199,27 +199,36 @@ fun TripItem(
 ) {
     val startDateTimeParts = trip.startDateTime
     val endDateTimeParts = trip.tripEndDataTime
+    var startDate = "";
+    var startTime = "";
+    var endDate = "";
+    var endTime = "";
+    if(startDateTimeParts != null)
+    {
+        startDate = startDateTimeParts.let { it ->
+            val date = java.util.Date(it)
+            val sdf = java.text.SimpleDateFormat("dd-MM-yyyy")
+            sdf.format(date)
+        }
+        startTime = startDateTimeParts.let { it ->
+            val date = java.util.Date(it)
+            val sdf = java.text.SimpleDateFormat("HH:mm")
+            sdf.format(date)
+        }
+    }
 
-    //convert date time which is in mills to date and time
-    val startDate = startDateTimeParts.let { it ->
-        val date = java.util.Date(it)
-        val sdf = java.text.SimpleDateFormat("dd-MM-yyyy")
-        sdf.format(date)
-    }
-    val startTime = startDateTimeParts.let { it ->
-        val date = java.util.Date(it)
-        val sdf = java.text.SimpleDateFormat("HH:mm")
-        sdf.format(date)
-    }
-    val endDate = endDateTimeParts.let { it ->
-        val date = java.util.Date(it)
-        val sdf = java.text.SimpleDateFormat("dd-MM-yyyy")
-        sdf.format(date)
-    }
-    val endTime = endDateTimeParts.let { it ->
-        val date = java.util.Date(it)
-        val sdf = java.text.SimpleDateFormat("HH:mm")
-        sdf.format(date)
+    if(endDateTimeParts != null)
+    {
+        endDate = endDateTimeParts.let { it ->
+            val date = java.util.Date(it)
+            val sdf = java.text.SimpleDateFormat("dd-MM-yyyy")
+            sdf.format(date)
+        }
+        endTime = endDateTimeParts.let { it ->
+            val date = java.util.Date(it)
+            val sdf = java.text.SimpleDateFormat("HH:mm")
+            sdf.format(date)
+        }
     }
 
     Card(
@@ -273,11 +282,11 @@ fun TripItem(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "${trip.estimatedTime/3600}h ${trip.estimatedTime/60}m",
+                            text = "${trip.estimatedTime/3600}h ${(trip.estimatedTime/60)%60}m",
                             fontSize = 12.sp
                         )
                         Text(
-                            text = "${trip.distance} kms",
+                            text = "${"%.2f".format(trip.distance)} kms",
                             fontSize = 12.sp
                         )
                     }

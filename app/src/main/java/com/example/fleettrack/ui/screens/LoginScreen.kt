@@ -10,8 +10,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,29 +27,40 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fleettrack.model.UserCredentials
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.sp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     failedAttempt: Boolean = false,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     val viewModel: FleetTrackViewModel = viewModel(
         factory = FleetTrackViewModel.Factory
     )
     var userCredentials: UserCredentials by remember { mutableStateOf(UserCredentials("", "")) }
-    Column(
-        modifier = modifier
-            .fillMaxSize()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("FleetTrack | Login") },
+            )
+        }
     ) {
-        Spacer(modifier = Modifier.weight(4f))
-        UserCredentialsForm(
-            userCredentials = userCredentials,
-            onChange = { userCredentials = it },
-            onSubmit = { viewModel.loginAndCheckCredentials(credentials = userCredentials) },
-            failedAttempt = failedAttempt,
+        Column(
             modifier = modifier
-        )
-        Spacer(modifier = Modifier.weight(1f))
+                .fillMaxSize()
+                .padding(paddingValues = it),
+        ) {
+            Spacer(modifier = Modifier.weight(4f))
+            UserCredentialsForm(
+                userCredentials = userCredentials,
+                onChange = { userCredentials = it },
+                onSubmit = { viewModel.loginAndCheckCredentials(userCredentials = userCredentials) },
+                failedAttempt = failedAttempt,
+                modifier = modifier
+            )
+            Spacer(modifier = Modifier.weight(1f))
+        }
     }
 }
 
@@ -64,6 +77,7 @@ fun UserCredentialsForm(
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(text = "Please enter your credentials to login.", modifier = modifier.padding(8.dp), fontSize = 12.sp)
         OutlinedTextField(
             value = userCredentials.userid,
             onValueChange = { onChange(userCredentials.copy(userid = it)) },

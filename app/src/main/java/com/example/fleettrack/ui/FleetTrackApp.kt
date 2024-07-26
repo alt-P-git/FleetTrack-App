@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fleettrack.model.UserCredentials
 import com.example.fleettrack.ui.screens.FleetTrackViewModel
 import com.example.fleettrack.ui.screens.LoadingScreen
 import com.example.fleettrack.ui.screens.LoginScreen
@@ -13,7 +14,7 @@ import com.example.fleettrack.ui.screens.WebViewScreen
 @Composable
 fun FleetTrackApp(
     modifier: Modifier = Modifier,
-    onLocationStart: () -> Unit = {},
+    onLocationStart: (UserCredentials) -> Unit = {},
     onLocationStop: () -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {
@@ -29,7 +30,7 @@ fun FleetTrackApp(
     } else if(isLoggedIn == true) {
         if(uiState.isShowingTripsScreen)
             TripsScreen(
-                onLocationStart = onLocationStart,
+                onLocationStart = { onLocationStart(viewModel.credentials) },
                 onLocationStop = onLocationStop,
             )
         else

@@ -39,7 +39,7 @@ class FleetTrackViewModel(
     init {
         viewModelScope.launch {
             val isLoggedIn = preferencesRepository.isLoggedIn.first()
-            delay(1000)
+
             _uiState.update { currentState ->
                 currentState.copy(isLoggedIn = isLoggedIn)
             }
@@ -65,7 +65,7 @@ class FleetTrackViewModel(
         }
     }
 
-    fun loginAndCheckCredentials(credentials: UserCredentials) {
+    fun loginAndCheckCredentials(userCredentials: UserCredentials) {
         /*viewModelScope.launch {
             preferencesRepository.saveLoggedIn(true, credentials)
             _uiState.update { currentState ->
@@ -74,9 +74,10 @@ class FleetTrackViewModel(
         }*/
         viewModelScope.launch {
             try {
-                val checkDriverResult = fleetTrackRepository.checkCredentials(credentials.userid, credentials.password)
+                val checkDriverResult = fleetTrackRepository.checkCredentials(userCredentials.userid, userCredentials.password)
                 val loggedIn = checkDriverResult.isValid
-//                Log.e("FleetTrackViewModel", "Result: $checkDriverResult")
+                credentials = userCredentials
+                Log.e("FleetTrackViewModel", "Result: $checkDriverResult")
                 preferencesRepository.saveLoggedIn(loggedIn, credentials)
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -85,7 +86,7 @@ class FleetTrackViewModel(
                     )
                 }
             } catch (e: Exception) {
-//                Log.e("FleetTrackViewModel", "Error logging in.", e)
+                Log.e("FleetTrackViewModel", "Error logging in.", e)
                 _uiState.update { currentState ->
                     currentState.copy(
                         isLoggedIn = false,
@@ -143,6 +144,7 @@ class FleetTrackViewModel(
     fun logout() {
         viewModelScope.launch {
             preferencesRepository.saveLoggedIn(false, UserCredentials("", ""))
+            credentials = UserCredentials("", "")
             _uiState.update { currentState ->
                 currentState.copy(isLoggedIn = false)
             }
